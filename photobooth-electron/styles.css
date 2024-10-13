@@ -74,6 +74,7 @@ video {
   /* text-align: center; */
   pointer-events: none; /* Prevent interaction */
   z-index: 3; /* Ensure instructions are above the overlay and video */
+  display: none;
 }
 
 .countdown {
