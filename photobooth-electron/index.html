@@ -11,7 +11,7 @@
     <div class="container">
         <video id="video" autoplay></video>
         <img id="overlayImage" alt="Overlay Image">
-        <div class="instructions">
+        <div id="first-instructions" class="instructions" style="opacity: 100;">
             <div>
                 <h1>Scary picture time!🎃</h1>
                 <ul>
@@ -22,17 +22,26 @@
                 </ul>
             </div>
         </div>
-        <div class="end-instructions">
-            <img src="qr-code.png" alt="QR Code" id="qrCode">
-            <ul>
-                <li>Nice pictures!📸</li>
-                <li>Scan the qr code to download your pictures</li>
-                <li>Or ask us after the event</li>
-            </ul>
+        <div id="every-instructions" class="instructions">
+            <div>
+                <h2>Press the button to start the countdown</h2>
+            </div>
+        </div>
+        <div id="end-instructions" class="instructions">
+            <div>
+                <div id="qr-code"></div>
+                <ul>
+                    <li>Nice pictures!📸</li>
+                    <li>Scan the qr code to download your pictures</li>
+                    <li>Or ask us after the event</li>
+                    <li>Press button to restart or wait (<span id="restart-countdown">60</span>)</li>
+                </ul>
+            </div>
         </div>
         <canvas id="canvas" style="display:none;"></canvas>
         <div id="countdown" class="countdown"></div>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="renderer.js"></script>
 </body>
 </html>

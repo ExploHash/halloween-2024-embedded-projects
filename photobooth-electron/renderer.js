@@ -5,6 +5,11 @@ const countdownDisplay = document.getElementById('countdown');
 let imageDisplay;
 const capturedImages = []; // Array to store captured image Blobs
 let isTakingPicture = false;
+const countdownFrom = 1;
+const showImageMs = 500;
+let isInEndScreen = false;
+let endscreenCountdown = 60;
+let endCountdownInterval;
 
 async function initCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -15,16 +20,33 @@ function startCountdown() {
     if (isTakingPicture) {
         return;
     }
+    if(isInEndScreen) {
+        const endInstructions = document.querySelector('#end-instructions');
+        endInstructions.style.opacity = 0;
+        isInEndScreen = false;
+
+        const firstInstructions = document.querySelector('#first-instructions');
+        firstInstructions.style.opacity = 1;
+
+        clearInterval(endCountdownInterval);
+
+        return;
+    }
 
     isTakingPicture = true;
 
-    let countdown = 3;
+    let countdown = countdownFrom;
     countdownDisplay.innerText = countdown;
     countdownDisplay.style.display = 'block';
 
-    const instructions = document.querySelector('.instructions');
-    if (instructions.style.display !== 'none') {
-        instructions.style.display = 'none';
+    const instructions = document.querySelector('#first-instructions');
+    if (instructions.style.opacity !== 0) {
+        instructions.style.opacity = 0;
+    }
+
+    const everyInstructions = document.querySelector('#every-instructions');
+    if (everyInstructions.style.opacity !== 0) {
+        everyInstructions.style.opacity = 0;
     }
 
 
@@ -34,9 +56,11 @@ function startCountdown() {
 
         if (countdown <= 0) {
             clearInterval(interval);
-            countdownDisplay.style.display = 'none';
-            captureImage();
-            isTakingPicture = false;
+            setTimeout(() => {
+                countdownDisplay.style.display = 'none';
+                captureImage();
+                isTakingPicture = false;
+            }, 100);
         }
     }, 1000);
 }
@@ -76,7 +100,38 @@ function showImage(dataURL) {
     setTimeout(() => {
         imageDisplay.style.display = 'none';
         window.electron.saveImage(dataURL);
-    }, 3000);
+        if(capturedImages.length !== 0) {
+            const everyInstructions = document.querySelector('#every-instructions');
+            everyInstructions.style.opacity = 1;
+            everyInstructions.innerHTML = `<h1>Press the button to start the countdown (${capturedImages.length + 1}/3)</h1>`;
+        } else {
+            const endInstructions = document.querySelector('#end-instructions');
+            endInstructions.style.opacity = 1;
+            isInEndScreen = true;
+
+            // Create qr code
+            new QRCode(document.getElementById("qr-code"), "http://jindo.dev.naver.com/collie");
+
+            endCountdownInterval = setInterval(() => {
+                endscreenCountdown--;
+                const restartCountdown = document.querySelector('#restart-countdown');
+
+                if (endscreenCountdown <= 0) {
+                    clearInterval(endCountdownInterval);
+                    endscreenCountdown = 30;
+                    const firstInstructions = document.querySelector('#first-instructions');
+                    firstInstructions.style.opacity = 1;
+
+                    const endInstructions = document.querySelector('#end-instructions');
+                    endInstructions.style.opacity = 0;
+                }
+                restartCountdown.innerText = endscreenCountdown;
+
+            }, 1000);
+
+
+        }
+    }, showImageMs);
 }
 
 // Function to upload images to a specified URL using FormData

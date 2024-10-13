@@ -55,24 +55,7 @@ video {
   /* text-align: center; */
   pointer-events: none; /* Prevent interaction */
   z-index: 3; /* Ensure instructions are above the overlay and video */
-}
-
-.end-instructions {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  color: white;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for blur effect */
-  /* text-align: center; */
-  pointer-events: none; /* Prevent interaction */
-  z-index: 3; /* Ensure instructions are above the overlay and video */
-  display: none;
+  opacity: 0; /* Hide instructions by default */
 }
 
 .countdown {
@@ -84,5 +67,5 @@ video {
   color: white;
   display: none;
   z-index: 4; /* Ensure countdown is above all other elements */
-  text-shadow: 0 0 10px black; /* Add a shadow to the text for better visibility */
+  text-shadow: 0 0 2px black; /* Add a shadow to the text for better visibility */
 }
