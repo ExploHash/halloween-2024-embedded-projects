@@ -1,0 +1,88 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  position: relative;
+  z-index: 1; /* Ensure video is below the overlay */
+}
+
+#overlayImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the overlay */
+  height: 100%;
+  width: auto; /* Maintain aspect ratio based on height */
+  object-fit: contain;
+  pointer-events: none; /* Prevent interaction */
+  display: block; /* Make sure it's visible */
+  z-index: 2; /* Ensure the overlay is above the video */
+  border: 10px solid white; /* Add a border to the overlay image */
+  box-sizing: border-box; /* Include the border in the element's dimensions */
+  display: none;
+}
+
+.instructions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for blur effect */
+  backdrop-filter: blur(5px);
+  /* text-align: center; */
+  pointer-events: none; /* Prevent interaction */
+  z-index: 3; /* Ensure instructions are above the overlay and video */
+}
+
+.end-instructions {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: white;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for blur effect */
+  backdrop-filter: blur(5px);
+  /* text-align: center; */
+  pointer-events: none; /* Prevent interaction */
+  z-index: 3; /* Ensure instructions are above the overlay and video */
+}
+
+.countdown {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 122px;
+  color: white;
+  display: none;
+  z-index: 4; /* Ensure countdown is above all other elements */
+}

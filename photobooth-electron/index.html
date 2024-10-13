@@ -1,0 +1,38 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Capture</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <video id="video" autoplay></video>
+        <img id="overlayImage" alt="Overlay Image">
+        <div class="instructions">
+            <div>
+                <h1>Scary picture time!🎃</h1>
+                <ul>
+                    <li>Take 3 different pictures every session</li>
+                    <li>Scan the qr code at the end to download the pictures or ask us</li>
+                    <li>LOOK SCARY!👻 </li>
+                    <li>Press the button to start the countdown if you dare</li>
+                </ul>
+            </div>
+        </div>
+        <div class="end-instructions">
+            <img src="qr-code.png" alt="QR Code" id="qrCode">
+            <ul>
+                <li>Nice pictures!📸</li>
+                <li>Scan the qr code to download your pictures</li>
+                <li>Or ask us after the event</li>
+            </ul>
+        </div>
+        <canvas id="canvas" style="display:none;"></canvas>
+        <div id="countdown" class="countdown"></div>
+    </div>
+    <script src="renderer.js"></script>
+</body>
+</html>
