@@ -13,7 +13,13 @@ let endCountdownInterval;
 const apiUrl = "http://192.168.42.155:3000";
 
 async function initCamera() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+            width: 1920,
+            height: 1080,
+            frameRate: 30
+        }
+    });
     video.srcObject = stream;
 }
 
