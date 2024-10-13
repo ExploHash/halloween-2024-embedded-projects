@@ -3,6 +3,8 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const dayjs = require('dayjs');
+const Gpio = require('onoff').Gpio;
+const pin = new Gpio(14, 'in', 'both');
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -45,3 +47,22 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
+
+pin.watch((err, value) => {
+    if (err) {
+      console.error('Error reading pin value:', err);
+      return;
+    }
+  
+    if (value === 1) {
+      console.log('Button pressed!');
+      win.webContents.send('start-countdown');
+    }
+});
+  
+  // Cleanup on exit
+  process.on('SIGINT', () => {
+    pin.unexport();
+    console.log('Exiting...');
+    process.exit();
+  });

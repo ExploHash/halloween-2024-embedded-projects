@@ -16,7 +16,8 @@
   ],
   "author": "GitHub",
   "dependencies": {
-    "dayjs": "^1.11.13"
+    "dayjs": "^1.11.13",
+    "onoff": "^6.0.3"
   },
   "devDependencies": {
     "electron": "^32.2.0"
