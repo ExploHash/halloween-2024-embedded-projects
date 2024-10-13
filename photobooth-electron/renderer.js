@@ -5,8 +5,8 @@ const countdownDisplay = document.getElementById('countdown');
 let imageDisplay;
 const capturedImages = []; // Array to store captured image Blobs
 let isTakingPicture = false;
-const countdownFrom = 1;
-const showImageMs = 500;
+const countdownFrom = 5;
+const showImageMs = 3000;
 let isInEndScreen = false;
 let endscreenCountdown = 60;
 let endCountdownInterval;
