@@ -10,6 +10,7 @@ const showImageMs = 500;
 let isInEndScreen = false;
 let endscreenCountdown = 60;
 let endCountdownInterval;
+const apiUrl = "http://192.168.42.155:3000";
 
 async function initCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -109,9 +110,6 @@ function showImage(dataURL) {
             endInstructions.style.opacity = 1;
             isInEndScreen = true;
 
-            // Create qr code
-            new QRCode(document.getElementById("qr-code"), "http://jindo.dev.naver.com/collie");
-
             endCountdownInterval = setInterval(() => {
                 endscreenCountdown--;
                 const restartCountdown = document.querySelector('#restart-countdown');
@@ -138,21 +136,27 @@ function showImage(dataURL) {
 async function uploadImages(images) {
     const formData = new FormData();
 
-    // Append each image Blob to the FormData object
     images.forEach((image, index) => {
-        formData.append(`image${index + 1}`, image, `image${index + 1}.png`);
+        formData.append('images', image, `image-${index}.png`);
     });
 
     try {
-        const response = await fetch('https://your-upload-url.com/upload', {
+        const response = await fetch(apiUrl + "/upload", {
             method: 'POST',
-            body: formData,
+            body: formData
         });
 
-        const result = await response.json();
-        console.log('Upload successful:', result);
+        if (response.ok) {
+            console.log('Images uploaded successfully');
+            // Update qr code with received uuid
+            const data = await response.json();
+            document.getElementById("qr-code").innerHTML = '';
+            new QRCode(document.getElementById("qr-code"), `${apiUrl}/view/${data.uuid}`);
+        } else {
+            console.error('Error uploading images');
+        }
     } catch (error) {
-        console.error('Upload failed:', error);
+        console.error('Error uploading images:', error);
     }
 }
 
