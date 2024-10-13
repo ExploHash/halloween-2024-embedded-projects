@@ -52,7 +52,6 @@ video {
   font-size: 32px;
   color: white;
   background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for blur effect */
-  backdrop-filter: blur(5px);
   /* text-align: center; */
   pointer-events: none; /* Prevent interaction */
   z-index: 3; /* Ensure instructions are above the overlay and video */
@@ -70,7 +69,6 @@ video {
   font-size: 32px;
   color: white;
   background: rgba(0, 0, 0, 0.5); /* Semi-transparent background for blur effect */
-  backdrop-filter: blur(5px);
   /* text-align: center; */
   pointer-events: none; /* Prevent interaction */
   z-index: 3; /* Ensure instructions are above the overlay and video */
