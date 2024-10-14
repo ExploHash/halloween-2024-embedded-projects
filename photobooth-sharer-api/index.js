@@ -68,7 +68,10 @@ router.get('/view/:uuid', async (ctx) => {
 
         const html = `
             <html>
-            <head><title>Images for ${uuid}</title></head>
+            <head>
+                <title>Images for ${uuid}</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
             <body>
                 <h1>Your scary images</h1>
                 <ul>
