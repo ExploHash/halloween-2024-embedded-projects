@@ -10,13 +10,13 @@ const showImageMs = 3000;
 let isInEndScreen = false;
 let endscreenCountdown = 60;
 let endCountdownInterval;
-const apiUrl = "http://192.168.42.155:3000";
+const apiUrl = "https://halloween-photobooth.huisbitches.com";
 
 async function initCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-            width: 1920,
-            height: 1080,
+            width: 640,
+            height: 480,
             frameRate: 30
         }
     });
