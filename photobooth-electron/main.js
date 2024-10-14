@@ -24,8 +24,8 @@ setInterval(() => {
 
 function createWindow() {
     const win = new BrowserWindow({
-        width: 1920,
-        height: 1080,
+        width: 640,
+        height: 480,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,

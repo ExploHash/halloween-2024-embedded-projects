@@ -24,6 +24,12 @@ const BUCKET_NAME = process.env.S3_BUCKET_NAME;
 // Configure multer for file uploads
 const upload = multer({ dest: 'uploads/' });
 
+router.get('/', async (ctx) => {
+    // 200 OK
+    ctx.status = 200;
+    ctx.body = "Hello world"
+});
+
 // Endpoint to upload images
 router.post('/upload', upload.array('images'), async (ctx) => {
     const uuid = uuidv4();
@@ -68,7 +74,10 @@ router.get('/view/:uuid', async (ctx) => {
 
         const html = `
             <html>
-            <head><title>Images for ${uuid}</title></head>
+            <head>
+                <title>Images for ${uuid}</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            </head>
             <body>
                 <h1>Your scary images</h1>
                 <ul>
