@@ -31,6 +31,7 @@ function createWindow() {
             contextIsolation: true,
             enableRemoteModule: false,
         },
+        fullscreen: true
     });
 
     win.loadFile('index.html');
