@@ -15,7 +15,7 @@ setInterval(() => {
 
         if (stdout.trim() === '1') {
             BrowserWindow.getAllWindows().forEach((window) => {
-                window.webContents.send('start-countdown');
+                window.webContents.send('button-pressed');
             });
         }
     });

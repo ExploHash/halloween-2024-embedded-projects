@@ -1,12 +1,9 @@
-// renderer.js
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const countdownDisplay = document.getElementById('countdown');
-let imageDisplay;
-const capturedImages = []; // Array to store captured image Blobs
-let isTakingPicture = false;
 const countdownFrom = 5;
 const showImageMs = 3000;
+const apiUrl = "https://halloween-photobooth.huisbitches.com";
+
+const capturedImages = []; // Array to store captured image Blobs
+let isTakingPicture = false;
 let isInEndScreen = false;
 let isShowingImage = false;
 let endscreenCountdown = 30;
@@ -15,9 +12,9 @@ let isProcessingImage = false;
 let showImageTimeout;
 let isShowingPreparing = false;
 let isUploading = false;
-const apiUrl = "https://halloween-photobooth.huisbitches.com";
 
 async function initCamera() {
+    const video = document.getElementById('video');
     const stream = await navigator.mediaDevices.getUserMedia({
         video: {
             width: 1920,
@@ -28,62 +25,41 @@ async function initCamera() {
     video.srcObject = stream;
 }
 
+function buttonPressed() {
+    // If we are already taking a picture or showing the preparing screen, return
+    if (isTakingPicture || isShowingPreparing || isShowingImage) {
+        return;
+    }
+
+    // If we are showing the end screen, hide it
+    if (isInEndScreen) {
+        hideEndScreen();
+        showFirstInstructions();
+        return;
+    }
+
+    startCountdown();
+}
+
 function startCountdown() {
-    if (isTakingPicture) {
-        return;
-    }
-
-    if (isShowingPreparing) {
-        return;
-    }
-
-    if(isInEndScreen) {
-        const endInstructions = document.querySelector('#end-instructions');
-        endInstructions.style.opacity = 0;
-        isInEndScreen = false;
-        const firstInstructions = document.querySelector('#first-instructions');
-        firstInstructions.style.opacity = 1;
-
-        clearInterval(endCountdownInterval);
-
-        // Clear the qr code
-        document.getElementById("qr-code").innerHTML = '';
-        endscreenCountdown = 30;
-
-        return;
-    }
-
-    if (isShowingImage) {
-        clearTimeout(showImageTimeout);
-        const imageDisplay = document.querySelector('#overlayImage');
-        imageDisplay.style.display = 'none';
-        isShowingImage = false;
-    }
-        
     isTakingPicture = true;
 
+    // Reset and show the countdown
     let countdown = countdownFrom;
-    countdownDisplay.innerText = countdown;
-    countdownDisplay.style.display = 'block';
+    showCountdown();
+    updateCountdown(countdown);
 
-    const instructions = document.querySelector('#first-instructions');
-    if (instructions.style.opacity !== 0) {
-        instructions.style.opacity = 0;
-    }
-
-    const everyInstructions = document.querySelector('#every-instructions');
-    if (everyInstructions.style.opacity !== 0) {
-        everyInstructions.style.opacity = 0;
-    }
+    // Hide first and every instructions
+    hideFirstInstructions();
+    hideEveryInstructions();
 
     const interval = setInterval(() => {
-        countdown--;
-        countdownDisplay.innerText = countdown;
+        updateCountdown(--countdown);
 
         if (countdown <= 0) {
             clearInterval(interval);
             setTimeout(() => {
-                countdownDisplay.style.display = 'none';
+                hideCountdown();
                 captureImage();
                 isTakingPicture = false;
             }, 50);
@@ -92,6 +68,9 @@ function startCountdown() {
 }
 
 function captureImage() {
+    // Draw the video frame to the canvas
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
@@ -108,7 +87,6 @@ function captureImage() {
 
             // If we have 3 images, upload them
             if (capturedImages.length === 3) {
-                isUploading = true;
                 uploadImages(capturedImages);
                 capturedImages.length = 0; // Clear the array after uploading
             }
@@ -120,29 +98,22 @@ function captureImage() {
 
 function showImage(dataURL) {
     isShowingImage = true;
-    // Create a data URL for the image to display it
-    const imageDisplay = document.querySelector('#overlayImage');
-    imageDisplay.src = dataURL;
-    imageDisplay.style.display = 'block';
-
+    showOverlayImage(dataURL);
 
     // Hide the image after 3 seconds
     showImageTimeout = setTimeout(() => {
-        imageDisplay.style.display = 'none';
-        if(capturedImages.length !== 0) {
-            const everyInstructions = document.querySelector('#every-instructions');
-            everyInstructions.style.opacity = 1;
-            everyInstructions.innerHTML = `<h1>Press the button to start the countdown (${capturedImages.length + 1}/3)</h1>`;
-        } else {
+        hideOverlayImage();
+
+        // If we have captured 3 images, show the preparing screen
+        if(capturedImages.length === 0) {
             if (isUploading) {
-                isShowingPreparing = true;
-                const preparingInstructions = document.querySelector('#preparing-instructions');
-                preparingInstructions.style.opacity = 1;
+                showPreparingInstructions();
             } else {
                 showEndScreen();
             }
+        } else {
+            showEveryInstructions();
         }
-        isShowingImage = false;
     }, showImageMs);
 }
 
@@ -152,27 +123,94 @@ function showEndScreen() {
     isInEndScreen = true;
 
     endCountdownInterval = setInterval(() => {
-        endscreenCountdown--;
-        const restartCountdown = document.querySelector('#restart-countdown');
+        updateEndScreenCountdown();
 
         if (endscreenCountdown <= 0) {
-            clearInterval(endCountdownInterval);
-            endscreenCountdown = 30;
-            const firstInstructions = document.querySelector('#first-instructions');
-            firstInstructions.style.opacity = 1;
-
-            const endInstructions = document.querySelector('#end-instructions');
-            endInstructions.style.opacity = 0;
-
-            document.getElementById("qr-code").innerHTML = '';
+            hideEndScreen();
+            showFirstInstructions();
         }
-        restartCountdown.innerText = endscreenCountdown;
     }, 1000);
 }
 
+function showOverlayImage(dataURL) {
+    const imageDisplay = document.querySelector('#overlayImage');
+    imageDisplay.style.display = 'block';
+    imageDisplay.src = dataURL;
+}
+
+function hideOverlayImage() {
+    clearTimeout(showImageTimeout);
+    const imageDisplay = document.querySelector('#overlayImage');
+    imageDisplay.style.display = 'none';
+    isShowingImage = false;
+}
+
+function showFirstInstructions() {
+    const firstInstructions = document.querySelector('#first-instructions');
+    firstInstructions.style.opacity = 1;
+}
+
+function hideFirstInstructions() {
+    const firstInstructions = document.querySelector('#first-instructions');
+    firstInstructions.style.opacity = 0;
+}
+
+function hideEndScreen() {
+    const endInstructions = document.querySelector('#end-instructions');
+    endInstructions.style.opacity = 0;
+    isInEndScreen = false;
+    clearInterval(endCountdownInterval);
+    // Clear the qr code
+    document.getElementById("qr-code").innerHTML = '';
+    endscreenCountdown = 30;
+}
+
+function showCountdown() {
+    const countdownDisplay = document.getElementById('countdown');
+    countdownDisplay.style.display = 'block';
+}
+
+function hideCountdown() {
+    const countdownDisplay = document.getElementById('countdown');
+    countdownDisplay.style.display = 'none';
+}
+
+function updateCountdown(countdown) {
+    const countdownDisplay = document.getElementById('countdown');
+    countdownDisplay.innerText = countdown;
+}
+
+function hideEveryInstructions() {
+    const everyInstructions = document.querySelector('#every-instructions');
+    everyInstructions.style.opacity = 0;
+}
+
+function showEveryInstructions() {
+    const everyInstructions = document.querySelector('#every-instructions');
+    everyInstructions.style.opacity = 1;
+    everyInstructions.innerHTML = `<h1>Press the button to start the countdown (${capturedImages.length + 1}/3)</h1>`;
+}
+
+function showPreparingInstructions() {
+    const preparingInstructions = document.querySelector('#preparing-instructions');
+    preparingInstructions.style.opacity = 1;
+    isShowingPreparing = true;
+}
+
+function hidePreparingInstructions() {
+    const preparingInstructions = document.querySelector('#preparing-instructions');
+    preparingInstructions.style.opacity = 0;
+    isShowingPreparing = false;
+}
+
+function updateEndScreenCountdown() {
+    const restartCountdown = document.querySelector('#restart-countdown');
+    restartCountdown.innerText = --endscreenCountdown;
+}
 
 // Function to upload images to a specified URL using FormData
 async function uploadImages(images) {
+    isUploading = true;
     const formData = new FormData();
 
     images.forEach((image, index) => {
@@ -214,9 +252,9 @@ window.electron.onImageSaved((event, message) => {
 });
 
 // Listen for the start countdown signal from the main process
-window.electron.onCountdownStart(() => {
-    startCountdown();
+window.electron.onButtonPressed(() => {
+    buttonPressed();
 });
 
-video.addEventListener('click', startCountdown);
+video.addEventListener('click', buttonPressed);
 window.addEventListener('load', initCamera);

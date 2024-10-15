@@ -17,5 +17,5 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electron', {
     saveImage: (imageData) => ipcRenderer.send('save-image', imageData),
     onImageSaved: (callback) => ipcRenderer.on('image-saved', callback),
-    onCountdownStart: (callback) => ipcRenderer.on('start-countdown', callback) // Added this line
+    onButtonPressed: (callback) => ipcRenderer.on('button-pressed', callback) // Added this line
 });
