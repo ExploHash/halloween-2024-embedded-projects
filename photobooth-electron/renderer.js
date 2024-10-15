@@ -8,15 +8,20 @@ let isTakingPicture = false;
 const countdownFrom = 5;
 const showImageMs = 3000;
 let isInEndScreen = false;
-let endscreenCountdown = 60;
+let isShowingImage = false;
+let endscreenCountdown = 30;
 let endCountdownInterval;
+let isProcessingImage = false;
+let showImageTimeout;
+let isShowingPreparing = false;
+let isUploading = false;
 const apiUrl = "https://halloween-photobooth.huisbitches.com";
 
 async function initCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-            width: 640,
-            height: 480,
+            width: 1920,
+            height: 1080,
             frameRate: 30
         }
     });
@@ -27,19 +32,34 @@ function startCountdown() {
     if (isTakingPicture) {
         return;
     }
+
+    if (isShowingPreparing) {
+        return;
+    }
+
     if(isInEndScreen) {
         const endInstructions = document.querySelector('#end-instructions');
         endInstructions.style.opacity = 0;
         isInEndScreen = false;
-
         const firstInstructions = document.querySelector('#first-instructions');
         firstInstructions.style.opacity = 1;
 
         clearInterval(endCountdownInterval);
 
+        // Clear the qr code
+        document.getElementById("qr-code").innerHTML = '';
+        endscreenCountdown = 30;
+
         return;
     }
 
+    if (isShowingImage) {
+        clearTimeout(showImageTimeout);
+        const imageDisplay = document.querySelector('#overlayImage');
+        imageDisplay.style.display = 'none';
+        isShowingImage = false;
+    }
+        
     isTakingPicture = true;
 
     let countdown = countdownFrom;
@@ -56,7 +76,6 @@ function startCountdown() {
         everyInstructions.style.opacity = 0;
     }
 
-
     const interval = setInterval(() => {
         countdown--;
         countdownDisplay.innerText = countdown;
@@ -67,7 +86,7 @@ function startCountdown() {
                 countdownDisplay.style.display = 'none';
                 captureImage();
                 isTakingPicture = false;
-            }, 100);
+            }, 50);
         }
     }, 1000);
 }
@@ -77,6 +96,10 @@ function captureImage() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Convert canvas to data URL and display it
+    const dataURL = canvas.toDataURL('image/png');
+    showImage(dataURL);
     
     // Convert the captured image to a Blob
     canvas.toBlob((blob) => {
@@ -85,18 +108,18 @@ function captureImage() {
 
             // If we have 3 images, upload them
             if (capturedImages.length === 3) {
+                isUploading = true;
                 uploadImages(capturedImages);
                 capturedImages.length = 0; // Clear the array after uploading
             }
         }
     }, 'image/png');
 
-    // Convert canvas to data URL and display it
-    const dataURL = canvas.toDataURL('image/png');
-    showImage(dataURL);
+    window.electron.saveImage(dataURL);
 }
 
 function showImage(dataURL) {
+    isShowingImage = true;
     // Create a data URL for the image to display it
     const imageDisplay = document.querySelector('#overlayImage');
     imageDisplay.src = dataURL;
@@ -104,39 +127,49 @@ function showImage(dataURL) {
 
 
     // Hide the image after 3 seconds
-    setTimeout(() => {
+    showImageTimeout = setTimeout(() => {
         imageDisplay.style.display = 'none';
-        window.electron.saveImage(dataURL);
         if(capturedImages.length !== 0) {
             const everyInstructions = document.querySelector('#every-instructions');
             everyInstructions.style.opacity = 1;
             everyInstructions.innerHTML = `<h1>Press the button to start the countdown (${capturedImages.length + 1}/3)</h1>`;
         } else {
-            const endInstructions = document.querySelector('#end-instructions');
-            endInstructions.style.opacity = 1;
-            isInEndScreen = true;
-
-            endCountdownInterval = setInterval(() => {
-                endscreenCountdown--;
-                const restartCountdown = document.querySelector('#restart-countdown');
-
-                if (endscreenCountdown <= 0) {
-                    clearInterval(endCountdownInterval);
-                    endscreenCountdown = 30;
-                    const firstInstructions = document.querySelector('#first-instructions');
-                    firstInstructions.style.opacity = 1;
-
-                    const endInstructions = document.querySelector('#end-instructions');
-                    endInstructions.style.opacity = 0;
-                }
-                restartCountdown.innerText = endscreenCountdown;
-
-            }, 1000);
-
-
+            if (isUploading) {
+                isShowingPreparing = true;
+                const preparingInstructions = document.querySelector('#preparing-instructions');
+                preparingInstructions.style.opacity = 1;
+            } else {
+                showEndScreen();
+            }
         }
+        isShowingImage = false;
     }, showImageMs);
 }
+
+function showEndScreen() {
+    const endInstructions = document.querySelector('#end-instructions');
+    endInstructions.style.opacity = 1;
+    isInEndScreen = true;
+
+    endCountdownInterval = setInterval(() => {
+        endscreenCountdown--;
+        const restartCountdown = document.querySelector('#restart-countdown');
+
+        if (endscreenCountdown <= 0) {
+            clearInterval(endCountdownInterval);
+            endscreenCountdown = 30;
+            const firstInstructions = document.querySelector('#first-instructions');
+            firstInstructions.style.opacity = 1;
+
+            const endInstructions = document.querySelector('#end-instructions');
+            endInstructions.style.opacity = 0;
+
+            document.getElementById("qr-code").innerHTML = '';
+        }
+        restartCountdown.innerText = endscreenCountdown;
+    }, 1000);
+}
+
 
 // Function to upload images to a specified URL using FormData
 async function uploadImages(images) {
@@ -160,6 +193,15 @@ async function uploadImages(images) {
             new QRCode(document.getElementById("qr-code"), `${apiUrl}/view/${data.uuid}`);
         } else {
             console.error('Error uploading images');
+        }
+        isUploading = false;
+
+        if (isShowingPreparing) {
+            isShowingPreparing = false;
+            showEndScreen();
+
+            const preparingInstructions = document.querySelector('#preparing-instructions');
+            preparingInstructions.style.opacity = 0;
         }
     } catch (error) {
         console.error('Error uploading images:', error);
