@@ -106,10 +106,10 @@ function captureImage() {
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  console.timeEnd("actual");
 
   // Convert canvas to data URL and display it
   const dataURL = canvas.toDataURL("image/png");
+  console.timeEnd("actual");
   showImage(dataURL);
 
   // Convert the captured image to a Blob
