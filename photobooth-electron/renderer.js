@@ -64,11 +64,11 @@ function startCountdown() {
 
     if (countdown <= 0) {
       clearInterval(interval);
-      setTimeout(() => {
-        hideCountdown();
-        captureImage();
-        isTakingPicture = false;
-      }, 50);
+      // setTimeout(() => {
+      hideCountdown();
+      captureImage();
+      isTakingPicture = false;
+      // }, 50);
     }
   }, 1000);
 }
