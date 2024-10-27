@@ -1,44 +1,58 @@
 <!-- index.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Camera Capture</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <video id="video" autoplay></video>
-        <img id="overlayImage" alt="Overlay Image">
-        <div id="first-instructions" class="instructions" style="opacity: 100;">
-            <div>
-                <h1>Scary picture time!🎃</h1>
-                <p>Press button to start the countdown (1/3 pictures)</p>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Camera Capture</title>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div class="container">
+            <video id="video" autoplay></video>
+            <img id="overlayImage" class="overlayImage" alt="Overlay Image" />
+            <img id="zombieImage" class="overlayImage" src="zombie.gif" />
+            <div
+                id="first-instructions"
+                class="instructions"
+                style="opacity: 100"
+            >
+                <div>
+                    <h1>Scary picture time!🎃</h1>
+                    <p>Press button to start the countdown (1/3 pictures)</p>
+                </div>
             </div>
-        </div>
-        <div id="every-instructions" class="instructions">
-            <div>
-                <h2>Press the button to start the countdown</h2>
+            <div id="every-instructions" class="instructions">
+                <div>
+                    <h2>Press the button to start the countdown</h2>
+                </div>
             </div>
-        </div>
-        <div id="end-instructions" class="instructions">
-            <div>
-                <div id="qr-code"></div>
-                <p>Scan the qr code to download your pictures<br/>
-                Press button to restart or wait (<span id="restart-countdown">30</span>)
-                </p>
+            <div id="end-instructions" class="instructions">
+                <div>
+                    <div id="qr-code"></div>
+                    <p>
+                        Scan the qr code to download your pictures<br />
+                        Press button to restart or wait (<span
+                            id="restart-countdown"
+                            >30</span
+                        >)
+                    </p>
+                </div>
             </div>
-        </div>
-        <div id="preparing-instructions" class="instructions">
-            <div>
-                <h2>Preparing QR Code...</h2>
+            <div id="preparing-instructions" class="instructions">
+                <div>
+                    <h2>Preparing QR Code...</h2>
+                </div>
             </div>
+            <canvas id="canvas" style="display: none"></canvas>
+            <div id="countdown" class="countdown"></div>
         </div>
-        <canvas id="canvas" style="display:none;"></canvas>
-        <div id="countdown" class="countdown"></div>
-    </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="renderer.js"></script>
-</body>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+            integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+        <script src="renderer.js"></script>
+    </body>
 </html>
