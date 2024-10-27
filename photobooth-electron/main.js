@@ -8,13 +8,13 @@ const dayjs = require("dayjs");
 const exec = require("child_process").exec;
 setInterval(() => {
   exec("gpioget 2 13", (error, stdout, stderr) => {
-    console.log("Detected button press");
     if (error) {
       console.error(`exec error: ${error}`);
       return;
     }
 
     if (stdout.trim() === "1") {
+      console.log("Detected button press");
       BrowserWindow.getAllWindows().forEach((window) => {
         window.webContents.send("button-pressed");
       });
