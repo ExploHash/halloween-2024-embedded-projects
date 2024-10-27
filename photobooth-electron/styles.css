@@ -75,3 +75,11 @@ video {
     z-index: 4; /* Ensure countdown is above all other elements */
     text-shadow: 0 0 10px black; /* Add a shadow to the text for better visibility */
 }
+
+#overlayImage {
+    z-index: 100;
+}
+
+#whiteFlash {
+    z-index: 99;
+}

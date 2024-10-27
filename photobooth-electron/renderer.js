@@ -91,6 +91,9 @@ function activateZombieMode() {
 }
 
 function captureImage() {
+  // Show flash
+  showFlash();
+
   // Draw the video frame to the canvas
   const video = document.getElementById("video");
   const canvas = document.getElementById("canvas");
@@ -122,6 +125,7 @@ function captureImage() {
 function showImage(dataURL) {
   isShowingImage = true;
   showOverlayImage(dataURL);
+  hideFlash();
 
   // Hide the image after 3 seconds
   showImageTimeout = setTimeout(() => {
@@ -248,6 +252,16 @@ function hidePreparingInstructions() {
 function updateEndScreenCountdown() {
   const restartCountdown = document.querySelector("#restart-countdown");
   restartCountdown.innerText = --endscreenCountdown;
+}
+
+function showFlash() {
+  const countdownDisplay = document.getElementById("whiteFlash");
+  countdownDisplay.style.display = "block";
+}
+
+function hideFlash() {
+  const countdownDisplay = document.getElementById("whiteFlash");
+  countdownDisplay.style.display = "none";
 }
 
 // Function to upload images to a specified URL using FormData
