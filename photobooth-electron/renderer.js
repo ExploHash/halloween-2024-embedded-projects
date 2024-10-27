@@ -13,6 +13,10 @@ let showImageTimeout;
 let isShowingPreparing = false;
 let isUploading = false;
 let isUploadingFailed = false;
+let resetCountDown = 120;
+let showResetCountDownFrom = 120;
+let resetCountDownInterval;
+let resetCountDownRunning = false;
 
 async function initCamera() {
   const video = document.getElementById("video");
@@ -32,6 +36,11 @@ function buttonPressed() {
     return;
   }
 
+  // Stop reset countdown if it is running
+  if (resetCountDownRunning) {
+    stopResetCountdown();
+  }
+
   // If we are showing the end screen, hide it
   if (isInEndScreen) {
     hideEndScreen();
@@ -40,6 +49,26 @@ function buttonPressed() {
   }
 
   startCountdown();
+}
+
+function startResetCountdown() {
+  resetCountDownRunning = true;
+  resetCountDownInterval = setInterval(() => {
+    resetCountDown--;
+
+    if (resetCountDown <= showResetCountDownFrom) {
+      showEveryInstructions(resetCountDown);
+    }
+
+    if (resetCountDown <= 0) {
+      window.location.reload();
+    }
+  }, 1000);
+}
+
+function stopResetCountdown() {
+  clearInterval(resetCountDownInterval);
+  resetCountDownRunning = false;
 }
 
 function startCountdown() {
@@ -55,28 +84,26 @@ function startCountdown() {
   hideEveryInstructions();
 
   const interval = setInterval(() => {
-    console.log(`Updating countdown: ${countdown}`);
     updateCountdown(--countdown);
 
     // Activate zombie mode on third picture on the 2
     if (countdown === 2 && capturedImages.length === 2) {
-      // setTimeout(activateZombieMode, 500);
-    }
-
-    if (countdown <= 0) {
-      console.time("full");
       clearInterval(interval);
-      // Show flash
-      showFlash();
-      setTimeout(() => {
-        hideCountdown();
-        console.log(`Taking picture: ${countdown}`);
-        captureImage();
-        console.timeEnd("full");
-        isTakingPicture = false;
-      }, 700);
+      setTimeout(activateZombieMode, 500);
+    } else if (countdown <= 0) {
+      clearInterval(interval);
+      takePicture();
     }
   }, 1000);
+}
+
+function takePicture() {
+  showFlash();
+  setTimeout(() => {
+    hideCountdown();
+    captureImage();
+    isTakingPicture = false;
+  }, 700);
 }
 
 function activateZombieMode() {
@@ -88,17 +115,14 @@ function activateZombieMode() {
 
   // After 200ms take a photo
   setTimeout(() => {
-    captureImage();
+    takePicture();
     isTakingPicture = false;
-  }, 200);
-
-  // After 300ms hide image
-  setTimeout(hideZombieImage, 300);
+    setTimeout(hideZombieImage, 700);
+  }, 500);
 }
 
 function captureImage() {
   // Draw the video frame to the canvas
-  console.time("actual");
   const video = document.getElementById("video");
   const canvas = document.getElementById("canvas");
   const context = canvas.getContext("2d");
@@ -108,7 +132,6 @@ function captureImage() {
 
   // Convert canvas to data URL and display it
   const dataURL = canvas.toDataURL("image/png");
-  console.timeEnd("actual");
   showImage(dataURL);
 
   // Convert the captured image to a Blob
@@ -145,6 +168,7 @@ function showImage(dataURL) {
       }
     } else {
       showEveryInstructions();
+      startResetCountdown();
     }
   }, showImageMs);
 }
@@ -232,10 +256,16 @@ function hideEveryInstructions() {
   everyInstructions.style.opacity = 0;
 }
 
-function showEveryInstructions() {
+function showEveryInstructions(countdown) {
   const everyInstructions = document.querySelector("#every-instructions");
   everyInstructions.style.opacity = 1;
-  everyInstructions.innerHTML = `<h1>Press the button to start the countdown (${capturedImages.length + 1}/3)</h1>`;
+  let html = `<h1>Press the button to start the countdown (${capturedImages.length + 1}/3)</h1>`;
+
+  if (countdown) {
+    html += `<h3>Resetting in ${countdown} seconds... Be quick!</h3>`;
+  }
+
+  everyInstructions.innerHTML = `<div>${html}</div>`;
 }
 
 function showPreparingInstructions() {
