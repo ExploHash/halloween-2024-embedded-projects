@@ -6,7 +6,6 @@ const dayjs = require("dayjs");
 
 // Run gpioget 0 21 every 10ms
 const exec = require("child_process").exec;
-let gpioCheck = setInterval(gpioTick, 10);
 
 function gpioTick() {
   exec("gpioget 2 13", (error, stdout, stderr) => {
@@ -22,8 +21,9 @@ function gpioTick() {
       });
 
       // Cooldown
-      clearInterval(gpioCheck);
-      setTimeout(() => (gpioCheck = setInterval(gpioTick, 10)), 1000);
+      setTimeout(gpioTick, 1000);
+    } else {
+      setTimeout(gpioTick, 10);
     }
   });
 }
@@ -73,3 +73,5 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });
+
+gpioTick();
