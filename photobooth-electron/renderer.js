@@ -74,7 +74,7 @@ function startCountdown() {
         captureImage();
         console.timeEnd("full");
         isTakingPicture = false;
-      }, 50);
+      }, 700);
     }
   }, 1000);
 }
