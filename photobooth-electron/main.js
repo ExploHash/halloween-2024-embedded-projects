@@ -11,6 +11,7 @@ function gpioTick() {
   exec("gpioget 2 13", (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
+      setTimeout(gpioTick, 20);
       return;
     }
 
