@@ -14,7 +14,7 @@ let isShowingPreparing = false;
 let isUploading = false;
 let isUploadingFailed = false;
 let resetCountDown = 120;
-let showResetCountDownFrom = 120;
+let showResetCountDownFrom = 30;
 let resetCountDownInterval;
 let resetCountDownRunning = false;
 
@@ -53,6 +53,7 @@ function buttonPressed() {
 
 function startResetCountdown() {
   resetCountDownRunning = true;
+  resetCountDown = 120;
   resetCountDownInterval = setInterval(() => {
     resetCountDown--;
 
