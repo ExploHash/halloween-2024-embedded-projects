@@ -66,13 +66,15 @@ function startCountdown() {
     if (countdown <= 0) {
       console.time("full");
       clearInterval(interval);
-      // setTimeout(() => {
-      hideCountdown();
-      console.log(`Taking picture: ${countdown}`);
-      captureImage();
-      console.timeEnd("full");
-      isTakingPicture = false;
-      // }, 50);
+      // Show flash
+      showFlash();
+      setTimeout(() => {
+        hideCountdown();
+        console.log(`Taking picture: ${countdown}`);
+        captureImage();
+        console.timeEnd("full");
+        isTakingPicture = false;
+      }, 50);
     }
   }, 1000);
 }
@@ -95,9 +97,6 @@ function activateZombieMode() {
 }
 
 function captureImage() {
-  // Show flash
-  showFlash();
-
   // Draw the video frame to the canvas
   console.time("actual");
   const video = document.getElementById("video");
