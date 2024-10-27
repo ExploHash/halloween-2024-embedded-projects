@@ -55,6 +55,7 @@ function startCountdown() {
   hideEveryInstructions();
 
   const interval = setInterval(() => {
+    console.log(`Updating countdown: ${countdown}`);
     updateCountdown(--countdown);
 
     // Activate zombie mode on third picture on the 2
@@ -63,10 +64,13 @@ function startCountdown() {
     }
 
     if (countdown <= 0) {
+      console.time("full");
       clearInterval(interval);
       // setTimeout(() => {
       hideCountdown();
+      console.log(`Taking picture: ${countdown}`);
       captureImage();
+      console.timeEnd("full");
       isTakingPicture = false;
       // }, 50);
     }
@@ -95,12 +99,14 @@ function captureImage() {
   showFlash();
 
   // Draw the video frame to the canvas
+  console.time("actual");
   const video = document.getElementById("video");
   const canvas = document.getElementById("canvas");
   const context = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  console.timeEnd("actual");
 
   // Convert canvas to data URL and display it
   const dataURL = canvas.toDataURL("image/png");
