@@ -6,7 +6,9 @@ const dayjs = require("dayjs");
 
 // Run gpioget 0 21 every 10ms
 const exec = require("child_process").exec;
-setInterval(() => {
+let gpioCheck = setInterval(gpioTick, 10);
+
+function gpioTick() {
   exec("gpioget 2 13", (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
@@ -18,9 +20,13 @@ setInterval(() => {
       BrowserWindow.getAllWindows().forEach((window) => {
         window.webContents.send("button-pressed");
       });
+
+      // Cooldown
+      clearInterval(gpioCheck);
+      setTimeout(() => (gpioCheck = setInterval(gpioTick, 10)), 1000);
     }
   });
-}, 10);
+}
 
 function createWindow() {
   const win = new BrowserWindow({

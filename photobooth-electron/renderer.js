@@ -17,7 +17,7 @@ let isUploadingFailed = false;
 async function initCamera() {
   const video = document.getElementById("video");
   const stream = await navigator.mediaDevices.getUserMedia({
-    video: {m
+    video: {
       width: 1920,
       height: 1080,
       frameRate: 30,
@@ -298,6 +298,7 @@ window.electron.onImageSaved((event, message) => {
 
 // Listen for the start countdown signal from the main process
 window.electron.onButtonPressed(() => {
+  console.log("Received button press");
   buttonPressed();
 });
 
