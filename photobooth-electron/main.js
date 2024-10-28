@@ -3,6 +3,7 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const dayjs = require("dayjs");
+const playSound = require("play-sound")();
 
 // Run gpioget 0 21 every 10ms
 const exec = require("child_process").exec;
@@ -61,6 +62,14 @@ ipcMain.on("save-image", (event, imageData) => {
     } else {
       console.log("Image saved to:", picturesPath);
       event.reply("image-saved", "Image saved successfully");
+    }
+  });
+});
+
+ipcMain.on("play-scary-sound", (event) => {
+  playSound.play(path.join(__dirname, "scream.mp3"), (err) => {
+    if (err) {
+      console.error("Error playing sound:", err);
     }
   });
 });
