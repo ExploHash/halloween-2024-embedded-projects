@@ -67,7 +67,7 @@ ipcMain.on("save-image", (event, imageData) => {
 });
 
 ipcMain.on("play-scary-sound", (event) => {
-  playSound.play(path.join(__dirname, "scream.mp3"), (err) => {
+  playSound.play(path.join(__dirname, "scream.wav"), (err) => {
     if (err) {
       console.error("Error playing sound:", err);
     }
