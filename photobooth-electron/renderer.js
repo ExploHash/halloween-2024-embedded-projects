@@ -122,7 +122,7 @@ function activateZombieMode() {
     takePicture();
     isTakingPicture = false;
     setTimeout(hideZombieImage, 700);
-  }, 500);
+  }, 1000);
 }
 
 function captureImage() {
