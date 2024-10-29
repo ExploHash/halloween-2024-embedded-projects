@@ -212,6 +212,8 @@ function hideOverlayImage() {
 
 function showZombieImage() {
   const imageDisplay = document.querySelector("#zombieImage");
+  imageDisplay.src = "";
+  imageDisplay.src = "zombie.gif";
   imageDisplay.style.display = "block";
 }
 
