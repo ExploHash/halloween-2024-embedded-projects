@@ -115,7 +115,7 @@ function activateZombieMode() {
   window.electron.playScarySound();
 
   // First show zombie image
-  showZombieImage();
+  setTimeout(showZombieImage, 200);
 
   // After 200ms take a photo
   setTimeout(() => {
